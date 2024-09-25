@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { motion, AnimatePresence } from "framer-motion";
+import StackedModal from "@/components/ui/stacked-modal";
 
 interface ChartDataPoint {
   x: number;
@@ -43,20 +43,7 @@ interface ChartDataModalProps {
 
 function ChartDataModal({ chartData, onClose, onAddNumber }: ChartDataModalProps) {
   return (
-    <motion.div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
-      onClick={onClose}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.2 } }}
-    >
-      <motion.div
-        className="bg-white p-6 rounded-lg shadow-lg"
-        onClick={(e) => e.stopPropagation()}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-      >
+    <div>
         <h2 className="text-xl font-semibold mb-4">Chart Data</h2>
         <ul>
           {chartData.map((data, index) => (
@@ -67,8 +54,7 @@ function ChartDataModal({ chartData, onClose, onAddNumber }: ChartDataModalProps
         </ul>
         <Button onClick={onClose}>Close</Button>
         <Button onClick={onAddNumber}>Add Number</Button>
-      </motion.div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -81,20 +67,7 @@ interface AddNumberModalProps {
 
 function AddNumberModal({ newNumber, onNumberChange, onClose, onSubmit }: AddNumberModalProps) {
   return (
-    <motion.div
-      className="fixed inset-0 flex items-center justify-center"
-      onClick={onClose}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.2 } }}
-    >
-      <motion.div
-        className="bg-white p-6 rounded-lg shadow-lg"
-        onClick={(e) => e.stopPropagation()}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-      >
+    <div>
         <h2 className="text-xl font-semibold mb-4">Add Number</h2>
         <input
           type="number"
@@ -105,32 +78,27 @@ function AddNumberModal({ newNumber, onNumberChange, onClose, onSubmit }: AddNum
         />
         <Button onClick={onClose}>Close</Button>
         <Button onClick={onSubmit}>Submit</Button>
-      </motion.div>
-    </motion.div>
+    </div>
   );
 }
 
 export default function Home() {
   const [chartData, setChartData] = useState(initialChartData);
-  const [showChartDataModal, setShowChartDataModal] = useState(false);
-  const [showAddNumberModal, setShowAddNumberModal] = useState(false);
   const [newNumber, setNewNumber] = useState<number>(0);
-
-  const handleOpenChartDataModal = () => setShowChartDataModal(true);
-  const handleCloseChartDataModal = () => setShowChartDataModal(false);
-
-  const handleOpenAddNumberModal = () => setShowAddNumberModal(true);
-  const handleCloseAddNumberModal = () => setShowAddNumberModal(false);
 
   const handleNumberChange = (num: number) => {
     setNewNumber(num);
   };
 
+  const [modalsOpen, setModalsOpen] = useState(0);
+  const handleOpenModal = () => setModalsOpen((prev) => prev + 1);
+  const handleCloseModal = () => setModalsOpen((prev) => Math.max(prev - 1, 0));
+
   const handleSubmitNumber = () => {
     const newBin = { x: chartData.length + 1, y: newNumber };
     setChartData([...chartData, newBin]);
     setNewNumber(0);
-    setShowAddNumberModal(false);
+    handleCloseModal();
   };
 
   return (
@@ -159,30 +127,23 @@ export default function Home() {
             </ChartContainer>
           </CardContent>
           <CardFooter className="flex-col items-start gap-2 text-sm">
-            <Button onClick={handleOpenChartDataModal}>View Numbers</Button>
+            <Button onClick={handleOpenModal}>View Numbers</Button>
           </CardFooter>
         </Card>
-
-        <AnimatePresence>
-          {showChartDataModal && (
-            <ChartDataModal
-              chartData={chartData}
-              onClose={handleCloseChartDataModal}
-              onAddNumber={handleOpenAddNumberModal}
-            />
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {showAddNumberModal && (
-            <AddNumberModal
+        
+        <StackedModal modalsOpen={modalsOpen} handleOpenModal={handleOpenModal} handleCloseModal={handleCloseModal}>
+          <ChartDataModal
+            chartData={chartData}
+            onClose={handleCloseModal}
+            onAddNumber={handleOpenModal}
+          />
+          <AddNumberModal
               newNumber={newNumber}
               onNumberChange={handleNumberChange}
-              onClose={handleCloseAddNumberModal}
+              onClose={handleCloseModal}
               onSubmit={handleSubmitNumber}
             />
-          )}
-        </AnimatePresence>
+        </StackedModal>
       </div>
     </div>
   );
