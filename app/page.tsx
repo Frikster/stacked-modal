@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ChartDataPoint {
   x: number;
@@ -42,8 +43,20 @@ interface ChartDataModalProps {
 
 function ChartDataModal({ chartData, onClose, onAddNumber }: ChartDataModalProps) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={onClose}>
-      <div className="bg-white p-6 rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
+    <motion.div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+    >
+      <motion.div
+        className="bg-white p-6 rounded-lg shadow-lg"
+        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+      >
         <h2 className="text-xl font-semibold mb-4">Chart Data</h2>
         <ul>
           {chartData.map((data, index) => (
@@ -54,8 +67,8 @@ function ChartDataModal({ chartData, onClose, onAddNumber }: ChartDataModalProps
         </ul>
         <Button onClick={onClose}>Close</Button>
         <Button onClick={onAddNumber}>Add Number</Button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -68,8 +81,20 @@ interface AddNumberModalProps {
 
 function AddNumberModal({ newNumber, onNumberChange, onClose, onSubmit }: AddNumberModalProps) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={onClose}>
-      <div className="bg-white p-6 rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
+    <motion.div
+      className="fixed inset-0 flex items-center justify-center"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+    >
+      <motion.div
+        className="bg-white p-6 rounded-lg shadow-lg"
+        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+      >
         <h2 className="text-xl font-semibold mb-4">Add Number</h2>
         <input
           type="number"
@@ -80,8 +105,8 @@ function AddNumberModal({ newNumber, onNumberChange, onClose, onSubmit }: AddNum
         />
         <Button onClick={onClose}>Close</Button>
         <Button onClick={onSubmit}>Submit</Button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -138,22 +163,26 @@ export default function Home() {
           </CardFooter>
         </Card>
 
-        {showChartDataModal && (
-          <ChartDataModal
-            chartData={chartData}
-            onClose={handleCloseChartDataModal}
-            onAddNumber={handleOpenAddNumberModal}
-          />
-        )}
+        <AnimatePresence>
+          {showChartDataModal && (
+            <ChartDataModal
+              chartData={chartData}
+              onClose={handleCloseChartDataModal}
+              onAddNumber={handleOpenAddNumberModal}
+            />
+          )}
+        </AnimatePresence>
 
-        {showAddNumberModal && (
-          <AddNumberModal
-            newNumber={newNumber}
-            onNumberChange={handleNumberChange}
-            onClose={handleCloseAddNumberModal}
-            onSubmit={handleSubmitNumber}
-          />
-        )}
+        <AnimatePresence>
+          {showAddNumberModal && (
+            <AddNumberModal
+              newNumber={newNumber}
+              onNumberChange={handleNumberChange}
+              onClose={handleCloseAddNumberModal}
+              onSubmit={handleSubmitNumber}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
