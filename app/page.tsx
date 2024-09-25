@@ -1,101 +1,160 @@
-import Image from "next/image";
+"use client"
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+interface ChartDataPoint {
+  x: number;
+  y: number;
+}
+
+const initialChartData: ChartDataPoint[] = [
+  { x: 1, y: 186 },
+  { x: 2, y: 305 },
+  { x: 3, y: 237 },
+  { x: 4, y: 73 },
+  { x: 5, y: 209 },
+  { x: 6, y: 214 },
+];
+
+const chartConfig = {
+  value: {
+    label: "Value",
+    color: "#2563eb",
+  },
+} satisfies ChartConfig;
+
+interface ChartDataModalProps {
+  chartData: ChartDataPoint[];
+  onClose: () => void;
+  onAddNumber: () => void;
+}
+
+function ChartDataModal({ chartData, onClose, onAddNumber }: ChartDataModalProps) {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={onClose}>
+      <div className="bg-white p-6 rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-xl font-semibold mb-4">Chart Data</h2>
+        <ul>
+          {chartData.map((data, index) => (
+            <li key={index}>
+              X: {data.x}, Y: {data.y}
+            </li>
+          ))}
+        </ul>
+        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onAddNumber}>Add Number</Button>
+      </div>
+    </div>
+  );
+}
+
+interface AddNumberModalProps {
+  newNumber: number;
+  onNumberChange: (number: number) => void;
+  onClose: () => void;
+  onSubmit: () => void;
+}
+
+function AddNumberModal({ newNumber, onNumberChange, onClose, onSubmit }: AddNumberModalProps) {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={onClose}>
+      <div className="bg-white p-6 rounded-lg shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-xl font-semibold mb-4">Add Number</h2>
+        <input
+          type="number"
+          value={newNumber}
+          onChange={(e) => onNumberChange(Number(e.target.value))}
+          className="border p-2 rounded mb-4 w-full"
+          placeholder="Enter a number"
+        />
+        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onSubmit}>Submit</Button>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [chartData, setChartData] = useState(initialChartData);
+  const [showChartDataModal, setShowChartDataModal] = useState(false);
+  const [showAddNumberModal, setShowAddNumberModal] = useState(false);
+  const [newNumber, setNewNumber] = useState<number>(0);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+  const handleOpenChartDataModal = () => setShowChartDataModal(true);
+  const handleCloseChartDataModal = () => setShowChartDataModal(false);
+
+  const handleOpenAddNumberModal = () => setShowAddNumberModal(true);
+  const handleCloseAddNumberModal = () => setShowAddNumberModal(false);
+
+  const handleNumberChange = (num: number) => {
+    setNewNumber(num);
+  };
+
+  const handleSubmitNumber = () => {
+    const newBin = { x: chartData.length + 1, y: newNumber };
+    setChartData([...chartData, newBin]);
+    setNewNumber(0);
+    setShowAddNumberModal(false);
+  };
+
+  return (
+    <div className="flex">
+      <div className="w-64 bg-gray-800 text-white p-4">
+        <h2 className="text-xl font-semibold mb-4">Dashboard</h2>
+        <ul>
+          <li className="mb-2">Chart 1</li>
+          <li className="mb-2">Chart 2</li>
+          <li className="mb-2">Chart 3</li>
+        </ul>
+      </div>
+      <div className="flex-1 p-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Bar Chart</CardTitle>
+            <CardDescription>Chart Data</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+              <BarChart accessibilityLayer data={chartData}>
+                <XAxis dataKey="x" />
+                <YAxis />
+                <Bar dataKey="y" fill="var(--color-value)" radius={4} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+          <CardFooter className="flex-col items-start gap-2 text-sm">
+            <Button onClick={handleOpenChartDataModal}>View Numbers</Button>
+          </CardFooter>
+        </Card>
+
+        {showChartDataModal && (
+          <ChartDataModal
+            chartData={chartData}
+            onClose={handleCloseChartDataModal}
+            onAddNumber={handleOpenAddNumberModal}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+        )}
+
+        {showAddNumberModal && (
+          <AddNumberModal
+            newNumber={newNumber}
+            onNumberChange={handleNumberChange}
+            onClose={handleCloseAddNumberModal}
+            onSubmit={handleSubmitNumber}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        )}
+      </div>
     </div>
   );
 }
