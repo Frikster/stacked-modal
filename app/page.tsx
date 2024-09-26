@@ -13,6 +13,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import StackedModal from "@/components/ui/stacked-modal";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface ChartDataPoint {
   x: number;
@@ -45,15 +54,26 @@ function ChartDataModal({ chartData, onClose, onAddNumber }: ChartDataModalProps
   return (
     <div>
         <h2 className="text-xl font-semibold mb-4">Chart Data</h2>
-        <ul>
-          {chartData.map((data, index) => (
-            <li key={index}>
-              X: {data.x}, Y: {data.y}
-            </li>
-          ))}
-        </ul>
-        <Button onClick={onClose}>Close</Button>
-        <Button onClick={onAddNumber}>Add Number</Button>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>X</TableHead>
+              <TableHead>Y</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {chartData.map((data, index) => (
+              <TableRow key={index}>
+                <TableCell>{data.x}</TableCell>
+                <TableCell>{data.y}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <div className="mt-4">
+          <Button onClick={onClose} className="mr-4">Close</Button>
+          <Button onClick={onAddNumber}>Add Number</Button>
+        </div>
     </div>
   );
 }
@@ -70,15 +90,15 @@ function AddNumberModal({ newNumber, onNumberChange, onClose, onSubmit, onOpenBo
   return (
     <div>
         <h2 className="text-xl font-semibold mb-4">Add Number</h2>
-        <input
+        <Input
           type="number"
           value={newNumber}
-          onChange={(e) => onNumberChange(Number(e.target.value))}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onNumberChange(Number(e.target.value))}
           className="border p-2 rounded mb-4 w-full"
           placeholder="Enter a number"
         />
-        <Button onClick={onClose}>Close</Button>
-        <Button onClick={onSubmit}>Submit</Button>
+        <Button onClick={onClose} className="mr-2">Close</Button>
+        <Button onClick={onSubmit} className="mr-2">Submit</Button>
         <Button onClick={onOpenBonusModal}>Open Bonus Modal</Button>
     </div>
   );
@@ -88,9 +108,9 @@ function BonusModal({ onClose, onOpenBonusModal }: { onClose: () => void, onOpen
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Bonus Modal</h2>
-      <Button onClick={onClose}>Close</Button>
+      <Button onClick={onClose} className="mr-2">Close</Button>
       { onOpenBonusModal &&
-        <Button onClick={onOpenBonusModal}>Open Bonus Modal</Button>
+        <Button onClick={onOpenBonusModal} className="ml-2">Open Bonus Modal</Button>
       }
     </div>
   );
