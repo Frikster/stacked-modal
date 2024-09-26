@@ -144,7 +144,7 @@ export default function Home() {
     if (newNumber === null) return;
     const newBin = { x: chartData.length + 1, y: newNumber };
     setChartData([...chartData, newBin]);
-    setNewNumber(0);
+    setNewNumber(null);
     handleCloseModal();
   };
 
