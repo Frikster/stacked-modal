@@ -1,3 +1,5 @@
+Inspired by this [tweet](https://x.com/emilkowalski_/status/1793339341311201556)
+
 ![StackedModal](StackedModal.gif)
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
