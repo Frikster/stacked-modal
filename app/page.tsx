@@ -63,9 +63,10 @@ interface AddNumberModalProps {
   onNumberChange: (number: number) => void;
   onClose: () => void;
   onSubmit: () => void;
+  onOpenBonusModal: () => void;
 }
 
-function AddNumberModal({ newNumber, onNumberChange, onClose, onSubmit }: AddNumberModalProps) {
+function AddNumberModal({ newNumber, onNumberChange, onClose, onSubmit, onOpenBonusModal }: AddNumberModalProps) {
   return (
     <div>
         <h2 className="text-xl font-semibold mb-4">Add Number</h2>
@@ -78,6 +79,19 @@ function AddNumberModal({ newNumber, onNumberChange, onClose, onSubmit }: AddNum
         />
         <Button onClick={onClose}>Close</Button>
         <Button onClick={onSubmit}>Submit</Button>
+        <Button onClick={onOpenBonusModal}>Open Bonus Modal</Button>
+    </div>
+  );
+}
+
+function BonusModal({ onClose, onOpenBonusModal }: { onClose: () => void, onOpenBonusModal?: () => void }) {
+  return (
+    <div>
+      <h2 className="text-xl font-semibold mb-4">Bonus Modal</h2>
+      <Button onClick={onClose}>Close</Button>
+      { onOpenBonusModal &&
+        <Button onClick={onOpenBonusModal}>Open Bonus Modal</Button>
+      }
     </div>
   );
 }
@@ -102,15 +116,16 @@ export default function Home() {
   };
 
   return (
-    <div className="flex">
-      <div className="w-64 bg-gray-800 text-white p-4">
+    <div className="flex h-screen">
+      <div className="w-64 bg-white text-black p-4">
         <h2 className="text-xl font-semibold mb-4">Dashboard</h2>
         <ul>
-          <li className="mb-2">Chart 1</li>
-          <li className="mb-2">Chart 2</li>
-          <li className="mb-2">Chart 3</li>
+          <li className="mb-2">Home</li>
+          <li className="mb-2">Users</li>
+          <li className="mb-2">Organizations</li>
         </ul>
       </div>
+      <div className="w-[1px] bg-gray-300"></div>
       <div className="flex-1 p-4">
         <Card>
           <CardHeader>
@@ -118,7 +133,7 @@ export default function Home() {
             <CardDescription>Chart Data</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+            <ChartContainer config={chartConfig} className="h-[50vh] w-full">
               <BarChart accessibilityLayer data={chartData}>
                 <XAxis dataKey="x" />
                 <YAxis />
@@ -142,7 +157,12 @@ export default function Home() {
               onNumberChange={handleNumberChange}
               onClose={handleCloseModal}
               onSubmit={handleSubmitNumber}
+              onOpenBonusModal={handleOpenModal}
             />
+            <BonusModal onClose={handleCloseModal} onOpenBonusModal={handleOpenModal} />
+            <BonusModal onClose={handleCloseModal} onOpenBonusModal={handleOpenModal} />
+            <BonusModal onClose={handleCloseModal} onOpenBonusModal={handleOpenModal} />
+            <BonusModal onClose={handleCloseModal} />
         </StackedModal>
       </div>
     </div>
