@@ -1208,6 +1208,11 @@ body {
   color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity));
+}
+
 .underline-offset-4 {
   text-underline-offset: 4px;
 }

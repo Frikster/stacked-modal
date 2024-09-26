@@ -79,26 +79,38 @@ function ChartDataModal({ chartData, onClose, onAddNumber }: ChartDataModalProps
 }
 
 interface AddNumberModalProps {
-  newNumber: number;
-  onNumberChange: (number: number) => void;
+  newNumber: number | null;
+  onNumberChange: (number: number | null) => void;
   onClose: () => void;
   onSubmit: () => void;
   onOpenBonusModal: () => void;
 }
 
 function AddNumberModal({ newNumber, onNumberChange, onClose, onSubmit, onOpenBonusModal }: AddNumberModalProps) {
+  const [showError, setShowError] = useState(false);
+
+  const handleSubmit = () => {
+    if (newNumber === null) {
+      setShowError(true);
+    } else {
+      setShowError(false);
+      onSubmit();
+    }
+  };
+
   return (
     <div>
         <h2 className="text-xl font-semibold mb-4">Add Number</h2>
         <Input
           type="number"
-          value={newNumber}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onNumberChange(Number(e.target.value))}
+          value={newNumber === null ? '' : newNumber}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onNumberChange(e.target.value === '' ? null : Number(e.target.value))}
           className="border p-2 rounded mb-4 w-full"
           placeholder="Enter a number"
         />
+        {showError && <p className="text-red-500 mb-4">Number is required</p>}
         <Button onClick={onClose} className="mr-2">Close</Button>
-        <Button onClick={onSubmit} className="mr-2">Submit</Button>
+        <Button onClick={handleSubmit} className="mr-2">Submit</Button>
         <Button onClick={onOpenBonusModal}>Open Bonus Modal</Button>
     </div>
   );
@@ -118,9 +130,9 @@ function BonusModal({ onClose, onOpenBonusModal }: { onClose: () => void, onOpen
 
 export default function Home() {
   const [chartData, setChartData] = useState(initialChartData);
-  const [newNumber, setNewNumber] = useState<number>(0);
+  const [newNumber, setNewNumber] = useState<number | null>(null);
 
-  const handleNumberChange = (num: number) => {
+  const handleNumberChange = (num: number | null) => {
     setNewNumber(num);
   };
 
@@ -129,6 +141,7 @@ export default function Home() {
   const handleCloseModal = () => setModalsOpen((prev) => Math.max(prev - 1, 0));
 
   const handleSubmitNumber = () => {
+    if (newNumber === null) return;
     const newBin = { x: chartData.length + 1, y: newNumber };
     setChartData([...chartData, newBin]);
     setNewNumber(0);
