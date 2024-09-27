@@ -8,6 +8,7 @@ interface StackedModalProps {
   handleCloseModal: () => void;
 }
 
+// This comment was added automatically using AI!
 const StackedModal: React.FC<StackedModalProps> = ({ modalsOpen, children, handleOpenModal, handleCloseModal }) => {
     const modalRefs = useRef<(HTMLDivElement | null)[]>([]);
     // top property of the first modal - all stacked modals are aligned to this
